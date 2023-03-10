@@ -1,20 +1,38 @@
 import type { Component } from 'solid-js';
-import { decodeAbiParameters } from 'viem'
+import { decodeFunctionData, encodeFunctionData, encodeAbiParameters } from 'viem'
+import {abi} from './abi/erc20.json'
 
 import logo from './logo.svg';
 import styles from './App.module.css';
 
 const App: Component = () => {
 
-  const values = decodeAbiParameters(
+  //encode
+
+  const encodedDataB = encodeAbiParameters(
     [
-      { name: '_to', type: 'address' },
-      { name: '_value', type: 'uint256' }
+      { name: '_value', type: 'uint256' },
     ],
-    '0x0000000000000000000000000d744e4fec1987490f9ca1b7b9023d154be6ae290000000000000000000000000000000000000000000000000000000000e4e1c0',
+    [15000000n]
   )
 
-  console.log(values)
+  console.log("Encoded params: ", encodedDataB)
+
+  const data = encodeFunctionData({
+    abi,
+    functionName: "transfer",
+    args: ["0x0D744E4fEc1987490f9CA1B7b9023D154Be6ae29", encodedDataB]
+  })
+
+  console.log("encoded data: ", data)
+
+    //decode
+    const values = decodeFunctionData ({
+      abi,
+      data: data,
+    })
+  
+    console.log("Final values: ",values)
 
   return (
     <div class={styles.App}>
